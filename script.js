@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const board = document.getElementById("board");
   const statusText = document.getElementById("status");
-  const clang = document.getElementById("clang");
 
   const scoreX = document.getElementById("scoreX");
   const scoreO = document.getElementById("scoreO");
@@ -17,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let gameActive = true;
   let gameOver = false;
   let gameState = Array(9).fill("");
-  let lastWinner = null; // track last round winner
+  let lastWinner = null;
 
   const names = { "✝️": "Cross", "☠️": "Skull" };
 
@@ -51,18 +50,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function makeMove(index) {
     gameState[index] = currentPlayer;
-    playClang();
     createBoard();
 
     if (checkWinner()) return;
 
     currentPlayer = currentPlayer === "✝️" ? "☠️" : "✝️";
     statusText.textContent = `${names[currentPlayer]}'s turn! ⚡`;
-  }
-
-  function playClang() {
-    clang.currentTime = 0;
-    clang.play();
   }
 
   function checkWinner() {
@@ -74,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
         saveScores();
         updateScores();
 
-        statusText.textContent = `⚡ ${names[winner]} WINS! Tap to play again! ⚡`;
+        statusText.textContent = `⚡ ${names[winner]} WINS! Loser goes first! ⚡`;
         gameActive = false;
         gameOver = true;
         showWinner(winner);
@@ -84,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!gameState.includes("")) {
       lastWinner = null;
-      statusText.textContent = "☠️ It's a tie! Tap to play again! ☠️";
+      statusText.textContent = "☠️ It's a tie! Loser goes first! ☠️";
       gameActive = false;
       gameOver = true;
       return true;
@@ -118,12 +111,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Loser starts next
     if (lastWinner === "✝️") currentPlayer = "☠️";
     else if (lastWinner === "☠️") currentPlayer = "✝️";
-    else currentPlayer = "✝️";
+    else currentPlayer = "✝️"; // tie defaults to Cross
 
     statusText.textContent = `${names[currentPlayer]}'s turn! ⚡`;
     createBoard();
 
-    // If tapped a square while restarting, place move immediately
     if (firstMoveIndex !== null && !gameState[firstMoveIndex]) {
       makeMove(firstMoveIndex);
     }
